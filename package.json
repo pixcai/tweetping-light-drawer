@@ -1,0 +1,25 @@
+{
+  "name": "tweetping-light-drawer",
+  "version": "1.0.0",
+  "description": "Tweetping light dot engine",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lightstream-company/tweetping-light-drawer.git"
+  },
+  "keywords": [
+    "tweetping",
+    "light",
+    "dot",
+    "engine"
+  ],
+  "author": "Franck Ernewein",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lightstream-company/tweetping-light-drawer/issues"
+  },
+  "homepage": "https://github.com/lightstream-company/tweetping-light-drawer#readme"
+}
