@@ -29,10 +29,18 @@ export function renderer(context, options) {
     throw new TypeError('context is not a CanvasRenderingContext2D valid object');
   }
   const {lineOpacity, pointOpacity, lineColor, pointColor} = Object.assign({}, defaultOptions, options);
-  const pointColorString = `rgba(${pointColor.join()},${pointOpacity})`;
-  const lineColorString = `rgba(${lineColor.join()},${lineOpacity})`;
-  return function draw(light) {
-    drawLight(context, light, lineColorString, pointColorString);
+  const pointRGB = pointColor.join();
+  const lineRGB = lineColor.join();
+  const pointColorString = `rgba(${pointRGB},${pointOpacity})`;
+  const lineColorString = `rgba(${lineRGB},${lineOpacity})`;
+  return function draw(light, opacity) {
+    if(opacity){
+      const pc = `rgba(${pointRGB},${pointOpacity * opacity})`;
+      const lc = `rgba(${lineRGB},${lineOpacity * opacity})`;
+      drawLight(context, light, pc, lc);
+    }else{
+      drawLight(context, light, lineColorString, pointColorString);
+    }
   };
 }
 
