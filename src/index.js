@@ -1,8 +1,4 @@
 const {random, PI, cos, sin} = Math;
-const DELTA = 1;
-const GAMMA = PI / 32;
-const MAX_SIZE = 17;
-const MIN_SIZE = 5;
 const defaultOptions = {
   lineOpacity: 0.1,
   pointOpacity: 0.5,
@@ -34,44 +30,53 @@ export function renderer(context, options) {
   const pointColorString = `rgba(${pointRGB},${pointOpacity})`;
   const lineColorString = `rgba(${lineRGB},${lineOpacity})`;
   return function draw(light, opacity) {
-    if(opacity){
+    if (opacity) {
       const pc = `rgba(${pointRGB},${pointOpacity * opacity})`;
       const lc = `rgba(${lineRGB},${lineOpacity * opacity})`;
       drawLight(context, light, pc, lc);
-    }else{
+    } else {
       drawLight(context, light, lineColorString, pointColorString);
     }
   };
 }
 
-export function createLightStructure(x, y, lineLimit = 5) {
-  const lines = [];
-  for (let i = 0; i < lineLimit; i++) {
-    lines.push({
-      alpha: random() * PI * 2,
-      size: random() * (MAX_SIZE - MIN_SIZE) + MIN_SIZE,
-      delta: random() > 0.5 ? DELTA : -DELTA,
-      gamma: random() > 0.5 ? GAMMA * random() : -GAMMA * random()
+
+export function lightGenerator(options = {}) {
+  const GAMMA = PI / 32;
+  const {MAX_SIZE = 17, DELTA = 1, MIN_SIZE = 5, lineLimit = 5} = options;
+
+  function create(x, y) {
+    const lines = [];
+    for (let i = 0; i < lineLimit; i++) {
+      lines.push({
+        alpha: random() * PI * 2,
+        size: random() * (MAX_SIZE - MIN_SIZE) + MIN_SIZE,
+        delta: random() > 0.5 ? DELTA : -DELTA,
+        gamma: random() > 0.5 ? GAMMA * random() : -GAMMA * random()
+      });
+    }
+    return {
+      x,
+      y,
+      lines
+    };
+  }
+
+  function update(light) {
+    light.lines.forEach(line => {
+      const {size, gamma} = line;
+      if (size > MAX_SIZE) {
+        line.delta = -DELTA;
+      } else if (size < MIN_SIZE) {
+        line.delta = DELTA;
+      }
+      line.size += line.delta;
+      line.alpha += gamma;
     });
+    return light;
   }
   return {
-    x,
-    y,
-    lines
+    create,
+    update
   };
 }
-
-export function updateLightStructure(light) {
-  light.lines.forEach(line => {
-    const {size, gamma} = line;
-    if (size > MAX_SIZE) {
-      line.delta = -DELTA;
-    } else if (size < MIN_SIZE) {
-      line.delta = DELTA;
-    }
-    line.size += line.delta;
-    line.alpha += gamma;
-  });
-  return light;
-}
-
