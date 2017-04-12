@@ -8,16 +8,17 @@ const defaultOptions = {
 
 export function drawLight(context, light, lineColorString, pointColorString) {
   const {x, y} = light;
+  context.strokeStyle = lineColorString;
   context.fillStyle = pointColorString;
   context.fillRect(x, y, 1, 1);
+  
+  context.beginPath();
   light.lines.forEach(line => {
     const {alpha, size} = line;
-    context.strokeStyle = lineColorString;
-    context.beginPath();
     context.moveTo(x, y);
     context.lineTo(x + cos(alpha) * size, y + sin(alpha) * size);
-    context.stroke();
   });
+  context.stroke();
 }
 
 export function renderer(context, options) {
@@ -27,16 +28,10 @@ export function renderer(context, options) {
   const {lineOpacity, pointOpacity, lineColor, pointColor} = Object.assign({}, defaultOptions, options);
   const pointRGB = pointColor.join();
   const lineRGB = lineColor.join();
-  const pointColorString = `rgba(${pointRGB},${pointOpacity})`;
-  const lineColorString = `rgba(${lineRGB},${lineOpacity})`;
   return function draw(light, opacity) {
-    if (opacity) {
-      const pc = `rgba(${pointRGB},${pointOpacity * opacity})`;
-      const lc = `rgba(${lineRGB},${lineOpacity * opacity})`;
-      drawLight(context, light, pc, lc);
-    } else {
-      drawLight(context, light, lineColorString, pointColorString);
-    }
+    const pointColorString = `rgba(${pointRGB},${pointOpacity * (opacity || 1)})`;
+    const lineColorString = `rgba(${lineRGB},${lineOpacity * (opacity || 1)})`;
+    drawLight(context, light, lineColorString, pointColorString);
   };
 }
 
